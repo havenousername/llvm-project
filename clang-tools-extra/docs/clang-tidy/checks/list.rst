@@ -112,6 +112,7 @@ Clang-Tidy Checks
    `bugprone-unused-return-value <bugprone-unused-return-value.html>`_,
    `bugprone-use-after-move <bugprone-use-after-move.html>`_,
    `bugprone-virtual-near-miss <bugprone-virtual-near-miss.html>`_, "Yes"
+   `cert-assignments-in-selection <cert-assignments-in-selection.html>`_, "Yes"
    `cert-dcl21-cpp <cert-dcl21-cpp.html>`_,
    `cert-dcl50-cpp <cert-dcl50-cpp.html>`_,
    `cert-dcl58-cpp <cert-dcl58-cpp.html>`_,

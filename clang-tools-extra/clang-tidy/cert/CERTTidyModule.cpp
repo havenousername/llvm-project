@@ -25,6 +25,7 @@
 #include "../misc/ThrowByValueCatchByReferenceCheck.h"
 #include "../performance/MoveConstructorInitCheck.h"
 #include "../readability/UppercaseLiteralSuffixCheck.h"
+#include "AssignmentsInSelectionCheck.h"
 #include "CommandProcessorCheck.h"
 #include "DefaultOperatorNewAlignmentCheck.h"
 #include "DontModifyStdNamespaceCheck.h"
@@ -292,6 +293,8 @@ public:
         "cert-err33-c");
     CheckFactories.registerCheck<StrToNumCheck>("cert-err34-c");
     // EXP
+    CheckFactories.registerCheck<AssignmentsInSelectionCheck>(
+        "cert-exp45-c");
     CheckFactories.registerCheck<bugprone::SuspiciousMemoryComparisonCheck>(
         "cert-exp42-c");
     // FLP

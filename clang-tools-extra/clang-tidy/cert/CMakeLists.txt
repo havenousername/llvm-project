@@ -4,6 +4,7 @@ set(LLVM_LINK_COMPONENTS
   )
 
 add_clang_library(clangTidyCERTModule
+  AssignmentsInSelectionCheck.cpp
   CERTTidyModule.cpp
   CommandProcessorCheck.cpp
   DefaultOperatorNewAlignmentCheck.cpp

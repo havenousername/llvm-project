@@ -232,6 +232,10 @@ New checks
   Finds potentially incorrect calls to ``memcmp()`` based on properties of the
   arguments.
 
+- New :doc:`cert-assignments-in-selection
+  <clang-tidy/checks/cert-assignments-in-selection>` check.
+  Checks for the assignments in the selection statements
+ 
 - New :doc:`cppcoreguidelines-virtual-class-destructor
   <clang-tidy/checks/cppcoreguidelines-virtual-class-destructor>` check.
 
