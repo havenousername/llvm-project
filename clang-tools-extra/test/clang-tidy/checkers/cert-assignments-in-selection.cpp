@@ -83,6 +83,7 @@ void assignmentsInSelectionExpression() {
     while ((X = 4) ? (X = 5) && B : (W = 8)) {
     // CHECK-MESSAGES: :[[@LINE-1]]:15: warning: assignment is not allowed inside ternary condition statement [cert-exp45-c]
     // CHECK-MESSAGES: :[[@LINE-2]]:25: warning: assignment is not allowed inside and statement [cert-exp45-c]
+    // CHECK-MESSAGES: :[[@LINE-3]]:40: warning: assignment is not allowed inside while statement [cert-exp45-c
     }
 
     do {
@@ -177,4 +178,20 @@ void assignmentsOutsideSelection() {
     int arr[10];
     // Compliant Solution If (Array expression)
     if (arr[x = y]) {}
+    if (arr[x, x = y])
+
+    // Compiant Solution (Top parenthesis)
+    while (((x = 4) ? (y = 5) && B : (p = 8))) {}
+    while ((x, x= y)) {}
+    while ((x, y = p ? y : p)) {}
+
+    while ((x = y = p)) {}
+
+    while (x == (p == ( x ? p : q) )) {}
+
+
+    // Compliant solution
+    while ('\t' == x || ' ' == x || '\n' == x) {}
+
+    if (((x = p) != 0) && x) {}
 };

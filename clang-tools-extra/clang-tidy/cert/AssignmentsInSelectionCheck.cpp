@@ -97,45 +97,47 @@ conditionalHasConditionMatcher(decltype(hasCondition(stmt())) Stmt) {
 
 void AssignmentsInSelectionCheck::registerMatchers(MatchFinder *Finder) {
   // binary matchers
-  const auto AssignmentMatcher = binaryOperator(isAssignmentOperator(), unless(anyOf(hasAncestor(callExpr()), hasAncestor(arraySubscriptExpr()))))
-      .bind("assignment");
-  const auto CommaMatcher = binaryOperator(hasOperatorName(","), hasRHS(AssignmentMatcher))
-      .bind("comma");
-  const auto AndOrMatcher = binaryOperator(hasAnyOperatorName("&&", "||"),
-                              forEach(implicitCastExpr(
-                                  hasDescendant(AssignmentMatcher))),
-                              // nested and | or expression. like ((x = y && b)) 
-                              unless(hasParent(parenExpr())));
+  const auto AssignmentMatcher =
+      binaryOperator(isAssignmentOperator(),
+                     unless(anyOf(hasAncestor(callExpr()),
+                                  hasAncestor(arraySubscriptExpr()))))
+          .bind("assignment");
+  const auto CommaMatcher =
+      binaryOperator(hasOperatorName(","), hasRHS(AssignmentMatcher))
+          .bind("comma");
+  const auto AndOrMatcher = binaryOperator(
+      hasAnyOperatorName("&&", "||"),
+      forEach(implicitCastExpr(hasDescendant(AssignmentMatcher))),
+      // nested and | or expression. like ((x = y && b))
+      unless(hasAncestor(parenExpr())));
 
-  const auto ForEachConditional =
-      conditionalForEachMatcher(forEach(AssignmentMatcher));
-
-  const auto MatchAssignment = anyOf(AssignmentMatcher, CommaMatcher,
-            implicitCastExpr(
-                anyOf(has(AssignmentMatcher),
-                      has(CommaMatcher))));
-  // Conditions 
+  const auto MatchAssignment =
+      anyOf(AssignmentMatcher, CommaMatcher,
+            implicitCastExpr(anyOf(has(AssignmentMatcher), has(CommaMatcher))));
+  const auto ForEachConditional = conditionalForEachMatcher(forEach(stmt(
+      anyOf(MatchAssignment, has(parenExpr(has(stmt(MatchAssignment))))))));
+  // Conditions MatchAssignment
   // Match conditions inside selection statements (expept ? operator)
-  const auto HasConditionMatcher = hasCondition(
-      allOf(forEachDescendant(
-                stmt(anyOf(implicitCastExpr(MatchAssignment), ForEachConditional))),
-            unless(implicitCastExpr(anyOf(
-                has(parenExpr()), has(implicitCastExpr(has(parenExpr()))))))));
+  const auto HasConditionMatcher = hasCondition(allOf(
+      forEachDescendant(
+          stmt(anyOf(implicitCastExpr(MatchAssignment), ForEachConditional))),
+      unless(implicitCastExpr(
+          anyOf(has(parenExpr()), has(implicitCastExpr(has(parenExpr()))))))));
 
   // For the cases when (=) ? anything : anything.
   const auto HasConditionCondionalMatcher = hasCondition(
-      allOf(forEachDescendant(stmt(
-                anyOf(implicitCastExpr(has(parenExpr(has(stmt(MatchAssignment))))), ForEachConditional))),
+      allOf(forEachDescendant(stmt(anyOf(
+                implicitCastExpr(has(parenExpr(has(stmt(MatchAssignment))))),
+                ForEachConditional))),
             unless(implicitCastExpr(
-                has(implicitCastExpr(has(parenExpr(has(parenExpr())))))))));
+                has(implicitCastExpr(has(parenExpr(has(parenExpr()))))))),
+            unless(hasAncestor(parenExpr()))));
 
   Finder->addMatcher(
-      stmt(anyOf(
-               whileStmt(HasConditionMatcher), ifStmt(HasConditionMatcher),
-               doStmt(HasConditionMatcher), forStmt(HasConditionMatcher),
-               conditionalHasConditionMatcher(HasConditionCondionalMatcher),
-               AndOrMatcher
-          ))
+      stmt(anyOf(whileStmt(HasConditionMatcher), ifStmt(HasConditionMatcher),
+                 doStmt(HasConditionMatcher), forStmt(HasConditionMatcher),
+                 conditionalHasConditionMatcher(HasConditionCondionalMatcher),
+                 AndOrMatcher))
           .bind("assignment-not-allowed-expression"),
       this);
 }
